@@ -1,0 +1,36 @@
+Vagrant.configure("2") do |config|
+  config.vm.define "work" do |work|
+    work.vm.box = "chad-thompson/ubuntu-trusty64-gui"
+    work.vm.hostname = 'work'
+    work.vm.box_url = "chad-thompson/ubuntu-trusty64-gui"
+
+    #work.vm.provision "shell", inline: $script
+    work.vm.provision :shell, path: "bootstrap_work.sh"
+
+    work.vm.network :private_network, ip: "192.168.56.101"
+
+    work.vm.provider :virtualbox do |v|
+      v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+      v.customize ["modifyvm", :id, "--memory", 8012]
+      v.customize ["modifyvm", :id, "--name", "work"]
+      v.customize ["modifyvm", :id, "--nic2", "hostonly", "--cableconnected2", "on", "--hostonlyadapter2", "VirtualBox Host-Only Ethernet Adapter #4"]
+      v.gui=true
+    end
+
+  end
+
+  config.vm.define "build" do |build|
+    build.vm.box = "centos/7"
+    build.vm.hostname = 'build'
+    build.vm.box_url = "centos/7"
+
+    build.vm.network :private_network, ip: "192.168.56.102"
+
+    build.vm.provider :virtualbox do |v|
+      v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+      v.customize ["modifyvm", :id, "--memory", 1512]
+      v.customize ["modifyvm", :id, "--name", "build"]
+      v.customize ["modifyvm", :id, "--nic2", "hostonly", "--cableconnected2", "on", "--hostonlyadapter2", "VirtualBox Host-Only Ethernet Adapter #4"]
+    end
+  end
+end
